@@ -65,4 +65,9 @@
         android:id="@+id/about"
         android:title="@string/about"
         app:showAsAction="never"/>
+
+    <item
+            android:id="@+id/markdown"
+            android:title="@string/markdown"
+            app:showAsAction="never"/>
 </menu>

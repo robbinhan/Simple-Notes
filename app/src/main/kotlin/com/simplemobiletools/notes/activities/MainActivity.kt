@@ -6,11 +6,15 @@ import android.os.Bundle
 import android.support.v4.view.ViewPager
 import android.text.method.ArrowKeyMovementMethod
 import android.text.method.LinkMovementMethod
+import android.util.Log
 import android.util.TypedValue
 import android.view.ActionMode
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
+import com.facebook.stetho.Stetho
+import com.simplemobiletools.commons.BuildConfig
 import com.simplemobiletools.commons.dialogs.ConfirmationAdvancedDialog
 import com.simplemobiletools.commons.dialogs.FilePickerDialog
 import com.simplemobiletools.commons.dialogs.RadioGroupDialog
@@ -21,7 +25,7 @@ import com.simplemobiletools.commons.models.FileDirItem
 import com.simplemobiletools.commons.models.RadioItem
 import com.simplemobiletools.commons.models.Release
 import com.simplemobiletools.commons.views.MyEditText
-import com.simplemobiletools.notes.BuildConfig
+//import com.simplemobiletools.notes.BuildConfig
 import com.simplemobiletools.notes.R
 import com.simplemobiletools.notes.adapters.NotesPagerAdapter
 import com.simplemobiletools.notes.dialogs.*
@@ -32,8 +36,12 @@ import com.simplemobiletools.notes.extensions.updateWidgets
 import com.simplemobiletools.notes.helpers.MIME_TEXT_PLAIN
 import com.simplemobiletools.notes.helpers.OPEN_NOTE_ID
 import com.simplemobiletools.notes.helpers.TYPE_NOTE
+import com.simplemobiletools.notes.models.ChangeLog
 import com.simplemobiletools.notes.models.Note
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_note.view.*
+import kotlinx.android.synthetic.main.note_view_horiz_scrollable.view.*
+import ru.noties.markwon.Markwon
 import java.io.File
 import java.nio.charset.Charset
 
@@ -53,6 +61,7 @@ class MainActivity : SimpleActivity(), ViewPager.OnPageChangeListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Stetho.initializeWithDefaults(this)
         setContentView(R.layout.activity_main)
         appLaunched(BuildConfig.APPLICATION_ID)
 
@@ -60,7 +69,13 @@ class MainActivity : SimpleActivity(), ViewPager.OnPageChangeListener {
 
         pager_title_strip.setTextSize(TypedValue.COMPLEX_UNIT_PX, getTextSize())
         pager_title_strip.layoutParams.height = (pager_title_strip.height + resources.getDimension(R.dimen.activity_margin) * 2).toInt()
-        checkWhatsNewDialog()
+        if (dbHelper.getChangeLog().size < 0
+                || (dbHelper.getChangeLog().size > 0 && dbHelper.getChangeLog().last().changeLogId < BuildConfig.VERSION_CODE)
+        ) {
+            checkWhatsNewDialog()
+            config.avoidWhatsNew = true
+            dbHelper.insertChangeLog(ChangeLog(BuildConfig.VERSION_CODE, "New ChangeLog"))
+        }
 
         intent.apply {
             if (action == Intent.ACTION_SEND && type == MIME_TEXT_PLAIN) {
@@ -153,6 +168,7 @@ class MainActivity : SimpleActivity(), ViewPager.OnPageChangeListener {
             R.id.delete_note -> displayDeleteNotePrompt()
             R.id.settings -> startActivity(Intent(applicationContext, SettingsActivity::class.java))
             R.id.about -> launchAbout()
+            R.id.markdown -> markdown()
             else -> return super.onOptionsItemSelected(item)
         }
         return true
@@ -568,6 +584,10 @@ class MainActivity : SimpleActivity(), ViewPager.OnPageChangeListener {
         mAdapter?.redo(view_pager.currentItem)
     }
 
+    private fun markdown() {
+        mAdapter?.markdown(view_pager.currentItem)
+    }
+
     private fun getNoteIndexWithId(id: Int): Int {
         for (i in 0 until mNotes.count()) {
             if (mNotes[i].id == id) {
@@ -629,6 +649,7 @@ class MainActivity : SimpleActivity(), ViewPager.OnPageChangeListener {
         if (shouldRecreateMenu) {
             invalidateOptionsMenu()
         }
+
     }
 
     private fun checkWhatsNewDialog() {

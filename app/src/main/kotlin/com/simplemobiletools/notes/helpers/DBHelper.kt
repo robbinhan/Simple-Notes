@@ -8,23 +8,25 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteDatabase.CONFLICT_IGNORE
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import com.simplemobiletools.commons.extensions.getIntValue
 import com.simplemobiletools.commons.extensions.getStringValue
 import com.simplemobiletools.notes.R
 import com.simplemobiletools.notes.extensions.config
+import com.simplemobiletools.notes.models.ChangeLog
 import com.simplemobiletools.notes.models.Note
 import com.simplemobiletools.notes.models.Widget
 import java.io.File
-import java.util.*
 
 class DBHelper private constructor(private val mContext: Context) : SQLiteOpenHelper(mContext, DB_NAME, null, DB_VERSION) {
     private val mDb = writableDatabase
 
     companion object {
         private const val DB_NAME = "notes.db"
-        private const val DB_VERSION = 4
+        private const val DB_VERSION = 5
         private const val NOTES_TABLE_NAME = "notes"
         private const val WIDGETS_TABLE_NAME = "widgets"
+        private const val CHANGELOG_TABLE_NAME = "changelog"
 
         private const val COL_ID = "id"
         private const val COL_TITLE = "title"
@@ -33,6 +35,8 @@ class DBHelper private constructor(private val mContext: Context) : SQLiteOpenHe
         private const val COL_PATH = "path"
 
         private const val COL_WIDGET_ID = "widget_id"
+        private const val COL_CHANGELOG_ID = "changelog_id"
+        private const val COL_CHANGELOG_VALUE = "changelog_value"
         private const val COL_NOTE_ID = "note_id"
 
         fun newInstance(context: Context) = DBHelper(context)
@@ -56,6 +60,10 @@ class DBHelper private constructor(private val mContext: Context) : SQLiteOpenHe
         if (oldVersion < 4) {
             db.execSQL("CREATE TABLE $WIDGETS_TABLE_NAME ($COL_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COL_WIDGET_ID INTEGER DEFAULT 0, $COL_NOTE_ID INTEGER DEFAULT 0)")
             insertFirstWidget(db)
+        }
+
+        if (oldVersion < 5) {
+            db.execSQL("CREATE TABLE $CHANGELOG_TABLE_NAME ($COL_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COL_CHANGELOG_ID INTEGER DEFAULT 0, $COL_CHANGELOG_VALUE TEXT DEFAULT '')")
         }
     }
 
@@ -199,6 +207,7 @@ class DBHelper private constructor(private val mContext: Context) : SQLiteOpenHe
     }
 
     fun updateNoteValue(note: Note) {
+        Log.d("DBhelper", note.value)
         val values = ContentValues().apply { put(COL_VALUE, note.value) }
         updateNote(note.id, values)
     }
@@ -240,5 +249,34 @@ class DBHelper private constructor(private val mContext: Context) : SQLiteOpenHe
         }
 
         return widgets
+    }
+
+    fun getChangeLog(): ArrayList<ChangeLog> {
+        val changeLogs = ArrayList<ChangeLog>()
+        val cols = arrayOf(COL_CHANGELOG_ID, COL_CHANGELOG_VALUE)
+        var cursor: Cursor? = null
+        try {
+            cursor = mDb.query(CHANGELOG_TABLE_NAME, cols, null, null, null, null, COL_ID)
+            if (cursor?.moveToFirst() == true) {
+                do {
+                    val changeLogId = cursor.getIntValue(COL_CHANGELOG_ID)
+                    val value = cursor.getStringValue(COL_CHANGELOG_VALUE)
+                    val widget = ChangeLog(changeLogId, value)
+                    changeLogs.add(widget)
+                } while (cursor.moveToNext())
+            }
+        } finally {
+            cursor?.close()
+        }
+
+        return changeLogs
+    }
+
+    fun insertChangeLog(changeLog: ChangeLog) {
+        val values = ContentValues().apply {
+            put(COL_CHANGELOG_ID, changeLog.changeLogId)
+            put(COL_CHANGELOG_VALUE, changeLog.vlaue)
+        }
+        mDb.insert(CHANGELOG_TABLE_NAME, null, values)
     }
 }

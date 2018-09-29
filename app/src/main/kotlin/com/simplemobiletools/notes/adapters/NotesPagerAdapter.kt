@@ -50,6 +50,8 @@ class NotesPagerAdapter(fm: FragmentManager, val notes: List<Note>, val activity
 
     fun redo(position: Int) = fragments[position]?.redo()
 
+    fun markdown(position: Int) = fragments[position]?.markdown()
+
     override fun finishUpdate(container: ViewGroup) {
         try {
             super.finishUpdate(container)

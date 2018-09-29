@@ -7,7 +7,7 @@ import android.content.Intent
 import com.simplemobiletools.notes.R
 import com.simplemobiletools.notes.helpers.*
 
-val Context.config: Config get() = Config.newInstance(applicationContext)
+public val Context.config: Config get() = Config.newInstance(applicationContext)
 
 val Context.dbHelper: DBHelper get() = DBHelper.newInstance(applicationContext)
 

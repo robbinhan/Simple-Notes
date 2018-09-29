@@ -9,11 +9,13 @@ import android.text.Selection
 import android.text.TextWatcher
 import android.text.style.UnderlineSpan
 import android.text.util.Linkify
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.simplemobiletools.commons.extensions.beGone
 import com.simplemobiletools.commons.extensions.beVisible
 import com.simplemobiletools.commons.extensions.onGlobalLayout
@@ -30,6 +32,11 @@ import com.simplemobiletools.notes.models.TextHistoryItem
 import kotlinx.android.synthetic.main.fragment_note.*
 import kotlinx.android.synthetic.main.fragment_note.view.*
 import kotlinx.android.synthetic.main.note_view_horiz_scrollable.view.*
+import ru.noties.markwon.*
+import ru.noties.markwon.il.AsyncDrawableLoader
+import ru.noties.markwon.renderer.ImageSizeResolver
+import ru.noties.markwon.spans.LinkSpan
+import ru.noties.markwon.spans.SpannableTheme
 import java.io.File
 
 // text history handling taken from https://gist.github.com/zeleven/0cfa738c1e8b65b23ff7df1fc30c9f7e
@@ -64,6 +71,8 @@ class NoteFragment : Fragment() {
         view.notes_horizontal_scrollview?.onGlobalLayout {
             view.notes_view.minWidth = view.notes_horizontal_scrollview.width
         }
+
+
 
         return view
     }
@@ -188,7 +197,8 @@ class NoteFragment : Fragment() {
     }
 
     private fun setWordCounter(text: String) {
-        val words = text.replace("\n", " ").split(" ")
+//        val words = text.replace("\n", " ").split(" ")
+        val words = text.split("")
         notes_counter.text = words.count { it.isNotEmpty() }.toString()
     }
 
@@ -236,6 +246,32 @@ class NoteFragment : Fragment() {
         })
     }
 
+    fun markdown() {
+//        val markdown = Markwon.markdown(context!!, view.notes_view.text.toString())
+//        Log.d("notefragment markdown", markdown.toString())
+//
+//        // use it
+//        Toast.makeText(context!!, markdown, Toast.LENGTH_LONG).show()
+
+
+//        val theme = SpannableTheme.builder().codeBackgroundColor(1).build()
+//        val theme = SpannableTheme.create(context!!)
+//
+//
+//        val  configuration = SpannableConfiguration.builder(context!!)
+//                .asyncDrawableLoader(AsyncDrawableLoader.create())
+//                .theme(theme)
+//                .urlProcessor(UrlProcessorRelativeToAbsolute(""))
+//                .build()
+//
+//        Markwon.setMarkdown(view.notes_view, configuration, view.notes_view.text.toString())
+//
+//        final CharSequence markdown = Markwon.markdown(configuration, "Are **you** still there?");
+//        Toast.makeText(context, markdown, Toast.LENGTH_LONG).show();
+
+        Markwon.setMarkdown(view.notes_view, view.notes_view.text.toString())
+    }
+
     fun isUndoAvailable() = textHistory.position > 0
 
     fun isRedoAvailable() = textHistory.position < textHistory.history.size
@@ -243,6 +279,7 @@ class NoteFragment : Fragment() {
     private var textWatcher: TextWatcher = object : TextWatcher {
         private var beforeChange: CharSequence? = null
         private var afterChange: CharSequence? = null
+        private var previousText: CharSequence? = null
 
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             if (!isUndoOrRedo) {
