@@ -12,7 +12,6 @@ import android.view.ActionMode
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import com.facebook.stetho.Stetho
 import com.simplemobiletools.commons.BuildConfig
 import com.simplemobiletools.commons.dialogs.ConfirmationAdvancedDialog
@@ -25,7 +24,6 @@ import com.simplemobiletools.commons.models.FileDirItem
 import com.simplemobiletools.commons.models.RadioItem
 import com.simplemobiletools.commons.models.Release
 import com.simplemobiletools.commons.views.MyEditText
-//import com.simplemobiletools.notes.BuildConfig
 import com.simplemobiletools.notes.R
 import com.simplemobiletools.notes.adapters.NotesPagerAdapter
 import com.simplemobiletools.notes.dialogs.*
@@ -39,11 +37,10 @@ import com.simplemobiletools.notes.helpers.TYPE_NOTE
 import com.simplemobiletools.notes.models.ChangeLog
 import com.simplemobiletools.notes.models.Note
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_note.view.*
-import kotlinx.android.synthetic.main.note_view_horiz_scrollable.view.*
 import ru.noties.markwon.Markwon
 import java.io.File
 import java.nio.charset.Charset
+
 
 class MainActivity : SimpleActivity(), ViewPager.OnPageChangeListener {
     private var mAdapter: NotesPagerAdapter? = null
@@ -586,6 +583,15 @@ class MainActivity : SimpleActivity(), ViewPager.OnPageChangeListener {
 
     private fun markdown() {
         mAdapter?.markdown(view_pager.currentItem)
+    }
+
+    fun markdownActivityOpen(text: String) {
+        Log.d("markdownActivityOpen", text)
+        val markdown = Markwon.markdown(this, text)
+        Log.d("markdownActivityOpen", markdown.toString())
+        val intent = Intent(this, MarkdownActivity::class.java)
+        intent.putExtra("EXTRA_MESSAGE", markdown.toString())
+        startActivity(intent)
     }
 
     private fun getNoteIndexWithId(id: Int): Int {

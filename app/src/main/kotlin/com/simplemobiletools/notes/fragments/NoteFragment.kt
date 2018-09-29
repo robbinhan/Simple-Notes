@@ -269,7 +269,9 @@ class NoteFragment : Fragment() {
 //        final CharSequence markdown = Markwon.markdown(configuration, "Are **you** still there?");
 //        Toast.makeText(context, markdown, Toast.LENGTH_LONG).show();
 
-        Markwon.setMarkdown(view.notes_view, view.notes_view.text.toString())
+        (activity as MainActivity).markdownActivityOpen(view.notes_view.text.toString())
+
+//        Markwon.setMarkdown(view.notes_view, view.notes_view.text.toString())
     }
 
     fun isUndoAvailable() = textHistory.position > 0
