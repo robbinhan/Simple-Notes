@@ -41,3 +41,4 @@ License
 - fix wordcount
 - changlog dailog once
 - markdown preview
+- top and bottom

@@ -7,9 +7,32 @@
         android:layout_height="match_parent"
         tools:context="com.simplemobiletools.notes.activities.MarkdownActivity">
 
-    <TextView
-            android:text="TextView"
+    <ScrollView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/scrollView2" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:orientation="vertical">
+            <TextView
+                    android:text="TextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView2" app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" android:layout_marginTop="25dp"
+                    android:layout_marginLeft="16dp" android:layout_marginStart="16dp"/>
+        </LinearLayout>
+    </ScrollView>
+    <Button
+            android:text="Button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" tools:layout_editor_absoluteY="16dp"
-            tools:layout_editor_absoluteX="144dp" android:id="@+id/textView2"/>
+            android:layout_height="wrap_content"
+            android:id="@+id/button"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginEnd="9dp"
+            android:layout_marginRight="9dp" android:layout_marginBottom="18dp"
+            app:layout_constraintEnd_toEndOf="parent" android:textColor="@android:color/black"
+            android:background="@android:drawable/editbox_background"/>
+
+
 </android.support.constraint.ConstraintLayout>

@@ -37,3 +37,6 @@ const val TYPE_CHECKLIST = 1
 
 // mime types
 const val MIME_TEXT_PLAIN = "text/plain"
+
+
+const val MARKDOWN_TEXT = "com.simplemobiletools.notes.markdown"

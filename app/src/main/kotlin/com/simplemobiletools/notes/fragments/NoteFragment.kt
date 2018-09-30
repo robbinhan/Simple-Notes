@@ -3,19 +3,19 @@ package com.simplemobiletools.notes.fragments
 import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.Fragment
 import android.text.Editable
 import android.text.Selection
 import android.text.TextWatcher
 import android.text.style.UnderlineSpan
 import android.text.util.Linkify
-import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.widget.ScrollView
 import com.simplemobiletools.commons.extensions.beGone
 import com.simplemobiletools.commons.extensions.beVisible
 import com.simplemobiletools.commons.extensions.onGlobalLayout
@@ -29,14 +29,10 @@ import com.simplemobiletools.notes.helpers.*
 import com.simplemobiletools.notes.models.Note
 import com.simplemobiletools.notes.models.TextHistory
 import com.simplemobiletools.notes.models.TextHistoryItem
+import kotlinx.android.synthetic.main.activity_markdown.*
 import kotlinx.android.synthetic.main.fragment_note.*
 import kotlinx.android.synthetic.main.fragment_note.view.*
 import kotlinx.android.synthetic.main.note_view_horiz_scrollable.view.*
-import ru.noties.markwon.*
-import ru.noties.markwon.il.AsyncDrawableLoader
-import ru.noties.markwon.renderer.ImageSizeResolver
-import ru.noties.markwon.spans.LinkSpan
-import ru.noties.markwon.spans.SpannableTheme
 import java.io.File
 
 // text history handling taken from https://gist.github.com/zeleven/0cfa738c1e8b65b23ff7df1fc30c9f7e
@@ -71,8 +67,6 @@ class NoteFragment : Fragment() {
         view.notes_horizontal_scrollview?.onGlobalLayout {
             view.notes_view.minWidth = view.notes_horizontal_scrollview.width
         }
-
-
 
         return view
     }

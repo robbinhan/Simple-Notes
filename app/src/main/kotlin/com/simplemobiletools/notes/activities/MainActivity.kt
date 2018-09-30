@@ -31,13 +31,13 @@ import com.simplemobiletools.notes.extensions.config
 import com.simplemobiletools.notes.extensions.dbHelper
 import com.simplemobiletools.notes.extensions.getTextSize
 import com.simplemobiletools.notes.extensions.updateWidgets
+import com.simplemobiletools.notes.helpers.MARKDOWN_TEXT
 import com.simplemobiletools.notes.helpers.MIME_TEXT_PLAIN
 import com.simplemobiletools.notes.helpers.OPEN_NOTE_ID
 import com.simplemobiletools.notes.helpers.TYPE_NOTE
 import com.simplemobiletools.notes.models.ChangeLog
 import com.simplemobiletools.notes.models.Note
 import kotlinx.android.synthetic.main.activity_main.*
-import ru.noties.markwon.Markwon
 import java.io.File
 import java.nio.charset.Charset
 
@@ -587,10 +587,8 @@ class MainActivity : SimpleActivity(), ViewPager.OnPageChangeListener {
 
     fun markdownActivityOpen(text: String) {
         Log.d("markdownActivityOpen", text)
-        val markdown = Markwon.markdown(this, text)
-        Log.d("markdownActivityOpen", markdown.toString())
         val intent = Intent(this, MarkdownActivity::class.java)
-        intent.putExtra("EXTRA_MESSAGE", markdown.toString())
+        intent.putExtra(MARKDOWN_TEXT, text)
         startActivity(intent)
     }
 
