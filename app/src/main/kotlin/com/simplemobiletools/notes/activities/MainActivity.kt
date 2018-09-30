@@ -586,7 +586,7 @@ class MainActivity : SimpleActivity(), ViewPager.OnPageChangeListener {
     }
 
     fun markdownActivityOpen(text: String) {
-        Log.d("markdownActivityOpen", text)
+//        Log.d("markdownActivityOpen", text)
         val intent = Intent(this, MarkdownActivity::class.java)
         intent.putExtra(MARKDOWN_TEXT, text)
         startActivity(intent)
